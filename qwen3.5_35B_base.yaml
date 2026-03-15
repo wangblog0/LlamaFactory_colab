@@ -10,7 +10,7 @@ default_system: 请你扮演一名人类，不要说自己是人工智能
 
 dataset: chat-sft
 dataset_dir: ./data/weclone_sft
-cutoff_len: 2048
+cutoff_len: 1024
 overwrite_cache: true
 preprocessing_num_workers: 8
 
@@ -20,17 +20,18 @@ logging_steps: 10
 save_steps: 100
 plot_loss: true
 
-per_device_train_batch_size: 2
-gradient_accumulation_steps: 16
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 32
 learning_rate: 1.0e-4
 num_train_epochs: 2.0
 lr_scheduler_type: cosine
 warmup_ratio: 0.1
 weight_decay: 0.1
+optim: paged_adamw_8bit
 
 lora_target: q_proj,v_proj
-lora_rank: 8
-lora_alpha: 16
+lora_rank: 4
+lora_alpha: 8
 lora_dropout: 0.25
 
 flash_attn: fa2
@@ -41,11 +42,11 @@ ddp_timeout: 180000000
 report_to: wandb
 run_name: qwen3.5-35b-base-3.14
 
-# 如果显存不够，打开下面这组 QLoRA 参数，并把 batch size 再降一点
-# quantization_bit: 4
-# quantization_method: bnb
-# quantization_type: nf4
-# double_quantization: true
+# 单卡 Colab 上优先保证能跑，使用更保守的 QLoRA 配置
+quantization_bit: 4
+quantization_method: bnb
+quantization_type: nf4
+double_quantization: true
 
 # 多卡训练时可打开
 # deepspeed: examples/deepspeed/ds_z2_config.json
