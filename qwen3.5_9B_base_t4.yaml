@@ -1,0 +1,54 @@
+model_name_or_path: Qwen/Qwen3.5-9B-Base
+trust_remote_code: true
+use_fast_tokenizer: true
+
+stage: sft
+do_train: true
+finetuning_type: lora
+template: qwen3_5_nothink
+default_system: 请你扮演一名人类，不要说自己是人工智能
+
+dataset: chat-sft
+dataset_dir: ./data/weclone_sft
+cutoff_len: 1024
+overwrite_cache: true
+preprocessing_num_workers: 2
+
+output_dir: ./saves/qwen3.5-9b-base/weclone_lora_sft_t4
+overwrite_output_dir: true
+logging_steps: 10
+save_steps: 100
+plot_loss: true
+
+# T4 16GB 显存建议：小 batch + 梯度累积
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 32
+learning_rate: 1.0e-4
+num_train_epochs: 4.0
+lr_scheduler_type: cosine
+warmup_ratio: 0.1
+weight_decay: 0.1
+optim: paged_adamw_8bit
+
+lora_target: q_proj,k_proj,v_proj,o_proj
+lora_rank: 8
+lora_alpha: 16
+lora_dropout: 0.1
+
+# T4 不支持 bf16，使用 fp16 更稳妥
+fp16: true
+ddp_timeout: 180000000
+gradient_checkpointing: true
+
+### 监控与日志
+report_to: wandb
+run_name: qwen3.5-9b-base-t4
+
+# 单卡 T4 上优先保证能跑，使用 QLoRA 配置
+quantization_bit: 4
+quantization_method: bnb
+quantization_type: nf4
+double_quantization: true
+
+# 多卡训练时可打开
+# deepspeed: examples/deepspeed/ds_z2_config.json
