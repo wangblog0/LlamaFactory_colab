@@ -23,16 +23,16 @@ plot_loss: true
 per_device_train_batch_size: 1
 gradient_accumulation_steps: 32
 learning_rate: 1.0e-4
-num_train_epochs: 2.0
+num_train_epochs: 4.0
 lr_scheduler_type: cosine
 warmup_ratio: 0.1
 weight_decay: 0.1
 optim: paged_adamw_8bit
 
-lora_target: q_proj,v_proj
-lora_rank: 4
-lora_alpha: 8
-lora_dropout: 0.25
+lora_target: q_proj,k_proj,v_proj,o_proj
+lora_rank: 8
+lora_alpha: 16
+lora_dropout: 0.1
 
 flash_attn: fa2
 bf16: true
