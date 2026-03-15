@@ -10,11 +10,12 @@ default_system: 请你扮演一名人类，不要说自己是人工智能
 
 dataset: chat-sft
 dataset_dir: ./data/weclone_sft
-cutoff_len: 1024
+# L4 23GB 上若仍 OOM，优先降低序列长度
+cutoff_len: 768
 overwrite_cache: true
 preprocessing_num_workers: 2
 
-output_dir: ./saves/qwen3.5-9b-base/weclone_lora_sft_t4
+output_dir: ./saves/qwen3.5-9b-base/weclone_lora_sft_l4
 overwrite_output_dir: true
 logging_steps: 10
 save_steps: 100
@@ -30,19 +31,20 @@ warmup_ratio: 0.1
 weight_decay: 0.1
 optim: paged_adamw_8bit
 
-lora_target: q_proj,k_proj,v_proj,o_proj
-lora_rank: 8
-lora_alpha: 16
+lora_target: q_proj,v_proj
+lora_rank: 4
+lora_alpha: 8
 lora_dropout: 0.1
 
-# T4 不支持 bf16，使用 fp16 更稳妥
+# L4 可用 bf16/flash-attn2，进一步降低显存峰值
 fp16: true
+flash_attn: fa2
 ddp_timeout: 180000000
 gradient_checkpointing: true
 
 ### 监控与日志
 report_to: wandb
-run_name: qwen3.5-9b-base-t4
+run_name: qwen3.5-9b-base-l4-oomsafe
 
 # 单卡 T4 上优先保证能跑，使用 QLoRA 配置
 quantization_bit: 4
