@@ -10,8 +10,7 @@ default_system: 请你扮演一名人类，不要说自己是人工智能
 
 dataset: chat-sft
 dataset_dir: ./data/weclone_sft
-# OOM 优先降序列长度；如果仍 OOM 可继续改到 512
-cutoff_len: 768
+cutoff_len: 1024
 overwrite_cache: true
 preprocessing_num_workers: 2
 
@@ -23,7 +22,7 @@ plot_loss: true
 
 # T4 16GB 显存建议：小 batch + 梯度累积
 per_device_train_batch_size: 1
-gradient_accumulation_steps: 64
+gradient_accumulation_steps: 32
 learning_rate: 1.0e-4
 num_train_epochs: 4.0
 lr_scheduler_type: cosine
@@ -31,10 +30,9 @@ warmup_ratio: 0.1
 weight_decay: 0.1
 optim: paged_adamw_8bit
 
-# 进一步减显存：先只训 q/v 两组投影，LoRA rank 调低
-lora_target: q_proj,v_proj
-lora_rank: 4
-lora_alpha: 8
+lora_target: q_proj,k_proj,v_proj,o_proj
+lora_rank: 8
+lora_alpha: 16
 lora_dropout: 0.1
 
 # T4 不支持 bf16，使用 fp16 更稳妥
